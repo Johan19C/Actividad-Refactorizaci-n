@@ -19,11 +19,12 @@ public class GestorPedidos {
             List<Double> preciosProductos,
             List<Integer> cantidades,
             String tipoCliente) {
-        if (nombreCliente == null || nombreCliente.trim().isEmpty()) {
+        if (!ValidarCliente.validarNombre(nombreCliente)) {
             System.out.println("Error: nombre de cliente invalido");
             return;
         }
-        if (emailCliente == null || !emailCliente.contains("@")) {
+
+        if (!ValidarCliente.validarEmail(emailCliente)) {
             System.out.println("Error: email invalido");
             return;
         }
@@ -76,11 +77,12 @@ public class GestorPedidos {
     }
 
     public void cancelarPedido(String nombreCliente, String emailCliente, int idPedido) {
-        if (nombreCliente == null || nombreCliente.trim().isEmpty()) {
+        if (!ValidarCliente.validarNombre(nombreCliente)) {
             System.out.println("Error: nombre de cliente invalido");
             return;
         }
-        if (emailCliente == null || !emailCliente.contains("@")) {
+
+        if (!ValidarCliente.validarEmail(emailCliente)) {
             System.out.println("Error: email invalido");
             return;
         }
