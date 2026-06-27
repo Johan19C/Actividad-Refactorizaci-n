@@ -4,11 +4,15 @@ import java.sql.*;
 
 public class GestorPedidos {
     private Connection conexionBD;
+    private PedidoDAO pedidoDAO;
 
     public GestorPedidos() {
         try {
             this.conexionBD = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/tienda", "root", "admin123");
+
+            this.pedidoDAO = new PedidoDAO(conexionBD);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -55,14 +59,7 @@ public class GestorPedidos {
         double descuento = estrategia.calcularDescuento(subtotal);
         double impuesto = (subtotal - descuento) * 0.12;
         double total = subtotal - descuento + impuesto;
-        try {
-            Statement stmt = conexionBD.createStatement();
-            String sql = "INSERT INTO pedidos (cliente, total) VALUES ('"
-                    + nombreCliente + "', " + total + ")";
-            stmt.executeUpdate(sql);
-        } catch (SQLException e) {
-            System.out.println("Error al guardar el pedido: " + e.getMessage());
-        }
+        pedidoDAO.guardarPedido(nombreCliente, total);
         try {
             FileWriter writer = new FileWriter("factura_" + nombreCliente + ".txt");
             writer.write("FACTURA\n");
