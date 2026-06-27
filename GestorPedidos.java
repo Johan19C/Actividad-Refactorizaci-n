@@ -2,21 +2,19 @@ import java.util.*;
 import java.sql.*;
 
 public class GestorPedidos {
-    private Connection conexionBD;
+
     private PedidoDAO pedidoDAO;
     private GeneradorFactura generadorFactura;
     private ServicioCorreo servicioCorreo;
 
     public GestorPedidos() {
         try {
-            this.conexionBD = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/tienda", "root", "admin123");
-
+            Connection conexionBD = ConexionBD.getConnection();
             this.pedidoDAO = new PedidoDAO(conexionBD);
             this.generadorFactura = new GeneradorFactura();
             this.servicioCorreo = new ServicioCorreo();
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -26,6 +24,7 @@ public class GestorPedidos {
             List<Double> preciosProductos,
             List<Integer> cantidades,
             String tipoCliente) {
+
         if (!ValidarCliente.validarNombre(nombreCliente)) {
             System.out.println("Error: nombre de cliente invalido");
             return;
@@ -35,10 +34,13 @@ public class GestorPedidos {
             System.out.println("Error: email invalido");
             return;
         }
+
         double subtotal = 0;
+
         for (int i = 0; i < nombresProductos.size(); i++) {
             subtotal += preciosProductos.get(i) * cantidades.get(i);
         }
+
         EstrategiaDescuento estrategia;
 
         switch (tipoCliente) {
@@ -62,7 +64,9 @@ public class GestorPedidos {
         double descuento = estrategia.calcularDescuento(subtotal);
         double impuesto = (subtotal - descuento) * 0.12;
         double total = subtotal - descuento + impuesto;
+
         pedidoDAO.guardarPedido(nombreCliente, total);
+
         generadorFactura.generarFactura(
                 nombreCliente,
                 nombresProductos,
@@ -72,10 +76,12 @@ public class GestorPedidos {
                 descuento,
                 impuesto,
                 total);
+
         servicioCorreo.enviarConfirmacion(nombreCliente, emailCliente, total);
     }
 
     public void cancelarPedido(String nombreCliente, String emailCliente, int idPedido) {
+
         if (!ValidarCliente.validarNombre(nombreCliente)) {
             System.out.println("Error: nombre de cliente invalido");
             return;
@@ -85,6 +91,7 @@ public class GestorPedidos {
             System.out.println("Error: email invalido");
             return;
         }
+
         pedidoDAO.cancelarPedido(idPedido);
         servicioCorreo.enviarCancelacion(nombreCliente, emailCliente, idPedido);
     }
