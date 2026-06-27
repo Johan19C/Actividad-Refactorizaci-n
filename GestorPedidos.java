@@ -5,6 +5,7 @@ public class GestorPedidos {
     private Connection conexionBD;
     private PedidoDAO pedidoDAO;
     private GeneradorFactura generadorFactura;
+    private ServicioCorreo servicioCorreo;
 
     public GestorPedidos() {
         try {
@@ -13,6 +14,7 @@ public class GestorPedidos {
 
             this.pedidoDAO = new PedidoDAO(conexionBD);
             this.generadorFactura = new GeneradorFactura();
+            this.servicioCorreo = new ServicioCorreo();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -70,12 +72,7 @@ public class GestorPedidos {
                 descuento,
                 impuesto,
                 total);
-        System.out.println("Enviando correo a " + emailCliente + "...");
-        System.out.println("Asunto: Confirmacion de pedido");
-        System.out.println("Cuerpo: Estimado " + nombreCliente + ", su pedido por $"
-                + total + " ha sido procesado.");
-        System.out.println("[LOG] Pedido procesado para " + nombreCliente
-                + " - Total: " + total);
+        servicioCorreo.enviarConfirmacion(nombreCliente, emailCliente, total);
     }
 
     public void cancelarPedido(String nombreCliente, String emailCliente, int idPedido) {
@@ -89,9 +86,6 @@ public class GestorPedidos {
             return;
         }
         pedidoDAO.cancelarPedido(idPedido);
-        System.out.println("Enviando correo a " + emailCliente + "...");
-        System.out.println("Asunto: Cancelacion de pedido");
-        System.out.println("Cuerpo: Estimado " + nombreCliente + ", su pedido #"
-                + idPedido + " ha sido cancelado.");
+        servicioCorreo.enviarCancelacion(nombreCliente, emailCliente, idPedido);
     }
 }
