@@ -1,3 +1,4 @@
+package util;
 public class ValidarCliente {
 
     public static boolean validarNombre(String nombre) {

@@ -1,3 +1,4 @@
+package estrategia;
 public class DescuentoRegular implements EstrategiaDescuento {
 
     @Override

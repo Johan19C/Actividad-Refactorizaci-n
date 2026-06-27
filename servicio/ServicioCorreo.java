@@ -1,3 +1,4 @@
+package servicio;
 public class ServicioCorreo {
 
     public void enviarConfirmacion(String nombreCliente, String emailCliente, double total) {

@@ -1,4 +1,15 @@
+package servicio;
 import java.util.*;
+
+import dao.PedidoDAO;
+import estrategia.DescuentoFrecuente;
+import estrategia.DescuentoNuevo;
+import estrategia.DescuentoRegular;
+import estrategia.DescuentoVIP;
+import estrategia.EstrategiaDescuento;
+import util.ConexionBD;
+import util.ValidarCliente;
+
 import java.sql.*;
 
 public class GestorPedidos {
