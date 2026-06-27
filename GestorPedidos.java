@@ -1,10 +1,10 @@
 import java.util.*;
-import java.io.*;
 import java.sql.*;
 
 public class GestorPedidos {
     private Connection conexionBD;
     private PedidoDAO pedidoDAO;
+    private GeneradorFactura generadorFactura;
 
     public GestorPedidos() {
         try {
@@ -12,6 +12,7 @@ public class GestorPedidos {
                     "jdbc:mysql://localhost:3306/tienda", "root", "admin123");
 
             this.pedidoDAO = new PedidoDAO(conexionBD);
+            this.generadorFactura = new GeneradorFactura();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -60,22 +61,15 @@ public class GestorPedidos {
         double impuesto = (subtotal - descuento) * 0.12;
         double total = subtotal - descuento + impuesto;
         pedidoDAO.guardarPedido(nombreCliente, total);
-        try {
-            FileWriter writer = new FileWriter("factura_" + nombreCliente + ".txt");
-            writer.write("FACTURA\n");
-            writer.write("Cliente: " + nombreCliente + "\n");
-            for (int i = 0; i < nombresProductos.size(); i++) {
-                writer.write(nombresProductos.get(i) + " x" + cantidades.get(i)
-                        + " = $" + (preciosProductos.get(i) * cantidades.get(i)) + "\n");
-            }
-            writer.write("Subtotal: $" + subtotal + "\n");
-            writer.write("Descuento: $" + descuento + "\n");
-            writer.write("Impuesto: $" + impuesto + "\n");
-            writer.write("TOTAL: $" + total + "\n");
-            writer.close();
-        } catch (IOException e) {
-            System.out.println("Error al generar la factura: " + e.getMessage());
-        }
+        generadorFactura.generarFactura(
+                nombreCliente,
+                nombresProductos,
+                preciosProductos,
+                cantidades,
+                subtotal,
+                descuento,
+                impuesto,
+                total);
         System.out.println("Enviando correo a " + emailCliente + "...");
         System.out.println("Asunto: Confirmacion de pedido");
         System.out.println("Cuerpo: Estimado " + nombreCliente + ", su pedido por $"
